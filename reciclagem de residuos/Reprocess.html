@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8" />
+<title>Recycle Cannon</title>
+<style>
+  body {
+    background: gray;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+  }
+
+  canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid #444;
+  }
+
+  #score-box, #timer-box, #level-box {
+    position: fixed;
+    padding: 8px 14px;
+    background: #ffffffcc;
+    border: 2px solid #222;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  #score-box { top: 15px; right: 20px; }
+  #timer-box { top: 15px; left: 20px; }
+  #level-box { top: 15px; left: 50%; transform: translateX(-50%); }
+</style>
+</head>
+
+<body>
+
+<div id="timer-box">Tempo: 60</div>
+<div id="level-box">Nível: 1</div>
+<div id="score-box">Score: 0</div>
+<canvas id="canvas" width="1000" height="550"></canvas>
+
+<script>
+/* ====== Variáveis básicas ====== */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+
+/* ====== Imagens ====== */
+const bg = new Image();
+bg.src = "image/background.png";
+
+const cannonImg = new Image();
+cannonImg.src = "image/cannon.png";
+
+/* Imagens para cada tipo de lixo */
+const trashImgs = {
+  Paper: new Image(),
+  Plastic: new Image(),
+  Glass: new Image(),
+  Metal: new Image()
+};
+trashImgs.Paper.src = "image/papel.png";
+trashImgs.Plastic.src = "image/plastico.png";
+trashImgs.Glass.src = "image/vidro.png";
+trashImgs.Metal.src = "image/metal.png";
+
+/* Imagens para as lixeiras */
+const binImgs = {
+  Paper: new Image(),
+  Plastic: new Image(),
+  Glass: new Image(),
+  Metal: new Image()
+};
+binImgs.Paper.src = "image/blue bin.png";
+binImgs.Plastic.src = "image/yellow bin.png";
+binImgs.Glass.src = "image/green bin.png";
+binImgs.Metal.src = "image/red bin.png";
+
+/* ====== Estado do jogo ====== */
+let trashList = [];
+let groundTrash = [];
+let angle = 0;
+let lastDrop = 0;
+let dropInterval = 4000;
+let score = 0;
+let level = 1;
+let timeLeft = 60;
+let timerActive = false;
+
+/* ====== Tipos ====== */
+const types = ["Paper","Plastic","Glass","Metal"];
+let nextTrashType = types[Math.floor(Math.random()*types.length)];
+
+/* ====== Lixeiras (posições) ====== */
+const BIN_W = 120;
+const BIN_H = 120;
+const bins = [
+  {type:"Plastic", x:100},
+  {type:"Paper",   x:320},
+  {type:"Glass",   x:540},
+  {type:"Metal",   x:760}
+];
+
+/* ====== Mira do canhão ====== */
+canvas.addEventListener("mousemove",(e)=>{
+  const r=canvas.getBoundingClientRect();
+  angle=Math.atan2(e.clientY-r.top-80,e.clientX-r.left-W/2);
+});
+
+/* ====== Criar lixo ====== */
+function dropTrash(){
+  trashList.push({
+    x:W/2 + Math.cos(angle)*80,
+    y:80 + Math.sin(angle)*80,
+    size:45,
+    vx:Math.cos(angle)*5,
+    vy:Math.sin(angle)*5,
+    gravity:0.14,
+    type: nextTrashType
+  });
+  nextTrashType = types[Math.floor(Math.random()*types.length)];
+}
+
+/* ====== Física ====== */
+function updateTrash(t){
+  t.vy+=t.gravity;
+  t.x+=t.vx;
+  t.y+=t.vy;
+
+  const groundY = H-BIN_H-40;
+
+  if(t.y>=groundY){
+    const hit = bins.find(b=>t.x>=b.x && t.x<=b.x+BIN_W);
+    if(hit){
+      score += (hit.type===t.type)?100:-50;
+      updateScore();
+      return false;
+    }
+    score -= 100;
+    updateScore();
+    const pile = groundTrash.filter(g=>Math.abs(g.x-t.x)<t.size);
+    t.y = pile.length===0 ? (H-25) : Math.min(...pile.map(p=>p.y))-t.size;
+    t.vx=t.vy=0;
+    groundTrash.push(t);
+    return false;
+  }
+  return true;
+}
+
+/* ====== Score ====== */
+function updateScore(){
+  document.getElementById("score-box").innerText = "Score: "+score;
+}
+
+/* ====== Desenhar ====== */
+function drawBins(){
+  bins.forEach(b=>{
+    ctx.drawImage(binImgs[b.type], b.x, H-BIN_H-20, BIN_W, BIN_H);
+  });
+}
+
+function drawCannon(){
+  ctx.save();
+  ctx.translate(W/2, 80); // Posição do canhão
+  ctx.rotate(angle);
+
+  const cannonWidth = 220;
+  const cannonHeight = 200;
+
+  // Desenhar centrado no eixo de rotação
+  ctx.drawImage(cannonImg, -cannonWidth/2, -cannonHeight/2, cannonWidth, cannonHeight);
+
+  ctx.restore();
+}
+
+
+function drawTrash(t){
+  ctx.drawImage(trashImgs[t.type], t.x-t.size/2, t.y-t.size/2, t.size, t.size);
+}
+
+/* ====== Loop ====== */
+function loop(ts){
+  ctx.clearRect(0,0,W,H);
+  if(bg.complete) ctx.drawImage(bg,0,0,W,H);
+
+  drawCannon();
+  drawBins();
+
+  groundTrash.forEach(drawTrash);
+  trashList = trashList.filter(t => (drawTrash(t), updateTrash(t)));
+
+  if(ts-lastDrop>dropInterval){
+    dropTrash();
+    lastDrop=ts;
+  }
+
+  requestAnimationFrame(loop);
+}
+
+updateScore();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
