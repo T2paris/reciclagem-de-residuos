@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ampulheta</title>
+    <style>
+        body { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+        canvas { border: 1px solid #000; }
+    </style>
+</head>
+<body onload="onload()">
+    <div style="width: 80px; height:160px;">
+        <canvas id="canvas" width="80" height="160"></canvas>
+    </div>
+    <input id="grains" type="number" value="0" hidden />
+    <script>
+        const WIDTH = 80;
+        const HEIGHT = 160;
+        const BOTTOM_HEIGHT = 80;
+        const TOP_HEIGHT = 80;
+        const grainCountTotal = 4800;
+
+        function getLeftBorder(y) {
+            if (y < 40) return 0;
+            else if (y < 80) return y - 40;
+            else if (y < 120) return 120 - y;
+            else return 0;
+        }
+
+        function getRightBorder(y) {
+            return WIDTH - getLeftBorder(y);
+        }
+
+        function drawBorders(ctx) {
+            let glassStyle = '#DCEAF7';
+            ctx.fillStyle = glassStyle;
+            for (let y = 0; y < HEIGHT; y++) {
+                let leftBorder = getLeftBorder(y);
+                let rightBorder = getRightBorder(y);
+                ctx.fillRect(leftBorder, y, rightBorder - leftBorder, 1);
+            }
+        }
+
+        function grainsInRow(y) {
+            return WIDTH - getLeftBorder(y) * 2;
+        }
+
+        function getGrainStyle() {
+            return "#C2B280";
+        }
+
+        function drawGrainsTop(ctx, grainCount) {
+            ctx.fillStyle = getGrainStyle();
+            let currentGrains = 0;
+            for (let y = TOP_HEIGHT - 1; y >= 0; y--) {
+                const grainsInThisRow = grainsInRow(y);
+                let leftBorder = getLeftBorder(y);
+                let rightBorder = getRightBorder(y);
+                if ((currentGrains + grainsInThisRow) < grainCount) {
+                    ctx.fillRect(leftBorder, y, rightBorder - leftBorder, 1);
+                    currentGrains += grainsInThisRow;
+                } else {
+                    let remainingGrains = grainCount - currentGrains;
+                    let leftHalf = remainingGrains / 2;
+                    ctx.fillRect(leftBorder, y, leftHalf, 1);
+                    ctx.fillRect(rightBorder - leftHalf, y, leftHalf, 1);
+                    return;
+                }
+            }
+        }
+
+        let bottomGrains = initializeBottomGrains();
+
+        function initializeBottomGrains() {
+            let arr = [];
+            for (let i = 0; i < WIDTH; i++) arr.push(new Array(HEIGHT / 2).fill(0));
+            return arr;
+        }
+
+        function getColumnHeights() {
+            let columnHeights = [];
+            const height = bottomGrains.length;
+            for (let column = 0; column < bottomGrains[0].length; column++) {
+                columnHeights[column] = 0;
+                for (let row = 0; row < height; row++) {
+                    if (bottomGrains[row][column] === 1) {
+                        columnHeights[column] = height - row;
+                        break;
+                    }
+                }
+            }
+            return columnHeights;
+        }
+
+        function dropGrains() {
+            for (let y = BOTTOM_HEIGHT - 2; y >= 0; y--) {
+                for (let x = 0; x < WIDTH; x++) {
+                    if (bottomGrains[y][x] === 0) continue;
+                    else if (bottomGrains[y + 1][x] === 0) {
+                        bottomGrains[y + 1][x] = 1;
+                        bottomGrains[y][x] = 0;
+                    } else if (y < BOTTOM_HEIGHT - 2) {
+                        if (x > 0 && bottomGrains[y + 1][x - 1] === 0) {
+                            bottomGrains[y + 1][x - 1] = 1;
+                            bottomGrains[y][x] = 0;
+                        } else if (x < WIDTH - 2 && bottomGrains[y + 1][x + 1] === 0) {
+                            bottomGrains[y + 1][x + 1] = 1;
+                            bottomGrains[y][x] = 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        function physicsStep() { dropGrains(); }
+
+        function spawn() { bottomGrains[0][Math.floor(WIDTH / 2)] = 1; }
+
+        function drawGrainsBottom(ctx) {
+            ctx.fillStyle = getGrainStyle();
+            for (let y = BOTTOM_HEIGHT - 1; y >= 0; y--) {
+                for (let x = 0; x < WIDTH; x++) {
+                    if (bottomGrains[y][x] === 1) ctx.fillRect(x, y + BOTTOM_HEIGHT, 1, 1);
+                }
+            }
+        }
+
+        function getContext() { return document.getElementById("canvas").getContext("2d"); }
+
+        function draw() {
+            let ctx = getContext();
+            ctx.clearRect(0,0,WIDTH,HEIGHT);
+            drawBorders(ctx);
+            const grainCountTop = grainCountTotal - grains.valueAsNumber;
+            drawGrainsTop(ctx, grainCountTop);
+            drawGrainsBottom(ctx);
+        }
+
+        let grainsAdded = 0;
+
+        function manualTick() {
+            const grainsPerTick = grainCountTotal / (60 * 60); // 1 minuto, 60 fps
+            grainsAdded += grainsPerTick;
+
+            while (grainsAdded >= 1) {
+                grains.value = grains.valueAsNumber + 1;
+                spawn();
+                physicsStep();
+                grainsAdded -= 1;
+            }
+
+            draw();
+        }
+
+        function tick() { manualTick(); }
+
+        function onload() {
+            grains = document.getElementById("grains");
+            setInterval(tick, 1000 / 60);
+            draw();
+        }
+    </script>
+</body>
+</html>
