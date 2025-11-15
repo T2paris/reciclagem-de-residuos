@@ -1,0 +1,94 @@
+/* ===================== RESET ===================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* ===================== BODY ===================== */
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    background: powderblue; /* fallback */
+    color: white;
+  }
+  
+  /* ===================== JOGO ===================== */
+  canvas#canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid #fff;
+  }
+  
+  #score-box, #level-box {
+    position: fixed;
+    padding: 8px 14px;
+    background: #ffffffcc;
+    border: 2px solid #222;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  
+  #score-box { top: 15px; right: 20px; }
+  #level-box { top: 15px; left: 50%; transform: translateX(-50%); }
+  
+  /* ===================== POPUP ===================== */
+  #popup {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+  }
+  
+  #popup h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+  
+  #popup button {
+    background: #fff;
+    color: #000;
+    font-weight: 700;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    margin: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  #popup button:hover { background: #ffb700; }
+  
+  /* ===================== AMPULHETA ===================== */
+  #sandclock {
+    background: white;
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    width: 75px;
+    height: 120px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+  
+  #sandcanvas { width: 75px; height: 120px; }
+  
+  #sandlabel {
+    margin-top: 6px;
+    color: white;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  

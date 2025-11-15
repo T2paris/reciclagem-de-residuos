@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Como jogar — ReciclaCaixas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tutorial.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Como jogar</h1>
+    </header>
+
+    <section class="card">
+      <h2>1. Use o rato (mouse)</h2>
+      <div class="how-grid">
+        <div>
+          <div class="screenshot">
+            
+            <img src="../image/Tutorial1.png" alt="Screenshot do jogo - caixas coloridas"/>
+          </div>
+        </div>
+        <aside class="legend">
+          
+          <div class="instructions">
+            • Direccione o carrinho que estiver no centro do tipo de lixo.<br>
+            • Aponte com precisão aos caixotes de lixo.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. Cada caixote tem uma cor e um tipo de material</h2>
+      <div class="how-grid">
+        <div>
+          <div class="screenshot">
+            <img src="../image/Tutorial2.png" alt="Legenda de cores dos caixotes"/>
+          </div>
+        </div>
+        <aside class="legend">
+          <div class="item"><span class="swatch sw-verde"></span> Verde — Vidro</div>
+          <div class="item"><span class="swatch sw-azul"></span> Azul — Papel e cartão</div>
+          <div class="item"><span class="swatch sw-amarelo"></span> Amarelo — Plástico e metal</div>
+          <div class="item"><span class="swatch sw-vermelho"></span> Vermelho — Pilhas e eletrônicos</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. Pontuação</h2>
+      <div class="instructions">
+        • Se colocares o item no caixote certo, recebês 100 pontos.<br>
+        • Se errares, perdes 50 pontos.<br>
+        • Se deixares o caixote cair, ganhas 100 pontos extra.
+      </div>
+      <div class="screenshot">
+            <img src="../image/Tutorial3.png" alt="Legenda de cores dos caixotes"/>
+          </div>
+
+      
+      
+    </section>
+
+      <section class="card">
+      <h2>4.Para passar ao nível seguinte </h2>
+      <div class="how-grid">
+        <div>
+          <div class="screenshot">
+            <img src="../image/Tutorial4.png" alt="Legenda de cores dos caixotes"/>
+          </div>
+        </div>
+         <div class="small-note">Tens de ter pelo menos 1000 pontos  tempo acabar.
+            Tens tempo limitado para reciclar todos os itens. Vence o tempo na ampulheta!
+         </div>
+       
+      </div>
+    </section>
+
+    <div class="button" id="startBtn">Jogar Aqui</div>
+
+    <footer>
+      © 2025 ReciclaCaixas — Desenvolvido para fins educativos.
+    </footer>
+  </div>
+
+  <script>
+  document.getElementById('startBtn').addEventListener('click', () => {
+    window.location.href = '../html/reprocess.html';
+  });
+  </script>
+
+
+  
+</body>
+</html>

@@ -1,0 +1,77 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: url("../image/background_mainMenu.png") center center/cover no-repeat;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  color: white;
+  font-family: 'Russo One', sans-serif;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  margin-left: 650px;
+}
+
+.menu {
+  position: absolute;
+  z-index: 1;
+  top: 16%;
+  left: 10%;
+}
+
+h1 {
+  font-family: 'Audiowide', cursive;
+  font-weight: 600;
+  font-size: 5vw;
+}
+
+h1 span {
+  font-family: 'Press Start 2P', cursive;
+  color: rgb(78, 114, 149);
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  background-color: black;
+  padding: 1vw 2vw;
+  margin-top: 1.2vw;
+  clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);
+  cursor: pointer;
+  transition: 0.3s;
+  width: 18vw;
+  font-size: 1.8vw;
+  font-weight: bold;
+  justify-content: center;
+}
+
+.button:hover {
+  background-color: white;
+  color: black;
+}
+
+@media (max-width: 600px) {
+  .button {
+    width: 50vw;
+    font-size: 4vw;
+    padding: 2vw 3vw;
+  }
+  h1 {
+    font-size: 9vw;
+  }
+  .menu {
+    top: 10%;
+    left: 5%;
+  }
+}
